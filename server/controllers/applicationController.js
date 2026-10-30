@@ -1,6 +1,7 @@
 import Application from "../models/adoptionApplication.js";
 import Pet from "../models/pet.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { notify } from "../utils/notify.js";
 
 const canReview = (pet, user) =>
   user.role === "admin" || pet.addedBy.toString() === user._id.toString();
@@ -42,6 +43,12 @@ export const createApplication = async (req, res) => {
       otherPets, experience, hoursAlonePerDay, reason,
       documents,
     });
+
+    notify(pet.addedBy, {
+  type: "application",
+  message: `New adoption application for ${pet.name}`,
+  link: "/staff/applications",
+});
 
     res.status(201).json(application);
   } catch (error) {
@@ -103,7 +110,7 @@ export const getApplicationById = async (req, res) => {
 };
 
 // PUT /api/applications/:id/review  - staff or admin approves / rejects
-export const reviewApplication = async (req, res) => {
+ export const reviewApplication = async (req, res) => {
   try {
     const { status, rejectionReason, visitDate } = req.body;
 
@@ -139,7 +146,14 @@ export const reviewApplication = async (req, res) => {
       application.pet.status = "Adopted";
       await application.pet.save();
 
-      // 2. Reject every other pending application for this pet
+      // 2. Find the other pending applicants first, so we can notify them
+      const others = await Application.find({
+        pet: application.pet._id,
+        _id: { $ne: application._id },
+        status: "Pending",
+      }).select("applicant");
+
+      // 3. Reject every other pending application for this pet
       await Application.updateMany(
         { pet: application.pet._id, _id: { $ne: application._id }, status: "Pending" },
         {
@@ -149,16 +163,39 @@ export const reviewApplication = async (req, res) => {
           reviewedAt: new Date(),
         }
       );
+
+      // 4. Tell those applicants
+      others.forEach((o) =>
+        notify(o.applicant, {
+          type: "application",
+          message: `Your application for ${application.pet.name} was closed because another application was approved.`,
+          link: "/my-applications",
+        })
+      );
     }
 
     await application.save();
+
+    // Tell the applicant about the decision
+    const petName = application.pet.name;
+    notify(application.applicant, {
+      type: "application",
+      message:
+        status === "Approved"
+          ? `Good news! Your application for ${petName} was approved.${
+              visitDate ? ` Visit date: ${new Date(visitDate).toLocaleDateString()}.` : ""
+            }`
+          : `Your application for ${petName} was not approved. Reason: ${rejectionReason}`,
+      link: "/my-applications",
+      email: `Your adoption application was ${status.toLowerCase()}`,
+    });
+
     res.json(application);
   } catch (error) {
     if (error.name === "CastError") return res.status(404).json({ message: "Application not found" });
     res.status(400).json({ message: error.message });
   }
 };
-
 // PUT /api/applications/:id/withdraw  - applicant cancels
 export const withdrawApplication = async (req, res) => {
   try {

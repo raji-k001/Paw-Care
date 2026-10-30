@@ -31,4 +31,4 @@ const petSchema = new mongoose.Schema(
 // Speeds up the filters we use most
 petSchema.index({ species: 1, status: 1, location: 1 });
 
-export default mongoose.model("Pet", petSchema);
+export default mongoose.models.Pet || mongoose.model("Pet", petSchema);

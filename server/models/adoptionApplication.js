@@ -37,4 +37,4 @@ applicationSchema.index(
   { unique: true, partialFilterExpression: { status: "Pending" } }
 );
 
-export default mongoose.model("adoptionApplication", applicationSchema);
+export default mongoose.models.AdoptionApplication || mongoose.model("AdoptionApplication", applicationSchema);

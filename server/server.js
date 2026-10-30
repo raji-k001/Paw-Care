@@ -5,6 +5,9 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import petRoutes from "./routes/petRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
+import rescueRoutes from "./routes/rescueRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 
 dotenv.config();
@@ -31,3 +34,9 @@ app.use((err, req, res, next) => {
 
 app.use("/api/pets", petRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/rescues", rescueRoutes);
+app.use("/api/users", userRoutes);
+
+app.use("/api/users", userRoutes);
+app.use("/api/notifications", notificationRoutes);

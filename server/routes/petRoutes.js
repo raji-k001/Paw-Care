@@ -2,7 +2,7 @@ import express from "express";
 import {
   createPet, getPets, getPetById, updatePet, deletePet,
 } from "../controllers/petController.js";
-import { protect, authorize } from "../middleware/authmiddleware.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
 
 const router = express.Router();
