@@ -4,6 +4,8 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import petRoutes from "./routes/petRoutes.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
+
 
 dotenv.config();
 connectDB();
@@ -26,3 +28,6 @@ app.use("/api/pets", petRoutes);
 app.use((err, req, res, next) => {
   res.status(400).json({ message: err.message });
 });
+
+app.use("/api/pets", petRoutes);
+app.use("/api/applications", applicationRoutes);
