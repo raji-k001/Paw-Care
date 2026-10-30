@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import petRoutes from "./routes/petRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -17,3 +18,11 @@ app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.use("/api/auth", authRoutes);
+app.use("/api/pets", petRoutes);
+
+// Catches upload errors (file too big, not an image) and returns JSON
+app.use((err, req, res, next) => {
+  res.status(400).json({ message: err.message });
+});
