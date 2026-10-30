@@ -16,7 +16,7 @@ export default function Navbar() {
   const link = "hover:text-orange-600";
 
   return (
-    <nav className="bg-white shadow">
+    <nav className="bg-white shadow print:hidden">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-3">
         <Link to="/" className="text-xl font-bold text-orange-600">🐾 PawCare</Link>
         <div className="flex flex-wrap items-center gap-4 text-sm">
@@ -28,18 +28,26 @@ export default function Navbar() {
               <Link to="/rescues/mine" className={link}>My Reports</Link>
             </>
           )}
-          {isResponder && <Link to="/rescues/assigned" className={link}>My Tasks</Link>}
+          {isResponder && <Link to="/rescues/assigned" className={link}>My Rescue Cases</Link>}
+          {user?.role === "volunteer" && (
+            <>
+              <Link to="/volunteer" className={link}>Volunteer Hub</Link>
+              <Link to="/volunteer/tasks" className={link}>My Shifts</Link>
+            </>
+          )}
           {isStaff && (
             <>
               <Link to="/staff/pets/new" className={link}>Add Pet</Link>
               <Link to="/staff/applications" className={link}>Review Applications</Link>
               <Link to="/rescues" className={link}>Rescue Cases</Link>
+              <Link to="/staff/volunteers" className={link}>Volunteers</Link>
+              <Link to="/staff/tasks" className={link}>Volunteer Tasks</Link>
             </>
           )}
+          {user?.role === "admin" && <Link to="/admin/certificates" className={link}>Certificates</Link>}
           {user ? (
             <>
-            <NotificationBell />
-    <span className="text-gray-500">{user.name} ({user.role})</span>
+              <NotificationBell />
               <span className="text-gray-500">{user.name} ({user.role})</span>
               <button onClick={handleLogout}
                 className="rounded bg-orange-600 px-3 py-1 text-white hover:bg-orange-700">

@@ -8,6 +8,9 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 import rescueRoutes from "./routes/rescueRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import volunteerRoutes from "./routes/volunteerRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
+import certificateRoutes from "./routes/certificateRoutes.js";
 
 
 dotenv.config();
@@ -40,3 +43,8 @@ app.use("/api/users", userRoutes);
 
 app.use("/api/users", userRoutes);
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/volunteers", volunteerRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/certificates", certificateRoutes);

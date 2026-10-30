@@ -12,6 +12,12 @@ import ManageApplications from "./pages/ManageApplications";
 import ReportRescue from "./pages/ReportRescue";
 import RescueList from "./pages/RescueList";
 import RescueDetails from "./pages/RescueDetails";
+import VolunteerHub from "./pages/VolunteerHub";
+import VolunteerShifts from "./pages/VolunteerShifts";
+import StaffVolunteers from "./pages/StaffVolunteers";
+import StaffTasks from "./pages/StaffTasks";
+import AdminCertificates from "./pages/AdminCertificates";
+import CertificateView from "./pages/CertificateView";
 
 const staff = ["shelter_staff", "admin"];
 const responders = ["volunteer", "shelter_staff", "admin"];
@@ -45,6 +51,19 @@ export default function App() {
 <Route path="/rescues"
   element={<ProtectedRoute roles={staff}><RescueList mode="all" /></ProtectedRoute>} />
 <Route path="/rescues/:id" element={<ProtectedRoute><RescueDetails /></ProtectedRoute>} />
+
+<Route path="/volunteer"
+  element={<ProtectedRoute roles={["volunteer"]}><VolunteerHub /></ProtectedRoute>} />
+<Route path="/volunteer/tasks"
+  element={<ProtectedRoute roles={["volunteer"]}><VolunteerShifts /></ProtectedRoute>} />
+<Route path="/staff/volunteers"
+  element={<ProtectedRoute roles={staff}><StaffVolunteers /></ProtectedRoute>} />
+<Route path="/staff/tasks"
+  element={<ProtectedRoute roles={staff}><StaffTasks /></ProtectedRoute>} />
+<Route path="/admin/certificates"
+  element={<ProtectedRoute roles={["admin"]}><AdminCertificates /></ProtectedRoute>} />
+<Route path="/certificates/:id"
+  element={<ProtectedRoute><CertificateView /></ProtectedRoute>} />
       </Routes>
     </div>
   );

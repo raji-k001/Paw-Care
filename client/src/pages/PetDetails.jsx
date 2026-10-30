@@ -67,9 +67,12 @@ export default function PetDetails() {
           {pet.status === "Adopted" ? (
             <p className="mt-5 rounded bg-gray-100 p-3 text-gray-600">This pet has been adopted 🎉</p>
           ) : user ? (
-            <button disabled className="mt-5 rounded bg-orange-300 px-4 py-2 text-white">
-              Apply to adopt (coming in Step 6)
-            </button>
+            <Link
+  to={`/pets/${pet._id}/apply`}
+  className="mt-5 inline-block rounded bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
+>
+  Apply to adopt
+</Link>
           ) : (
             <Link to="/login" className="mt-5 inline-block rounded bg-orange-600 px-4 py-2 text-white">
               Login to apply
