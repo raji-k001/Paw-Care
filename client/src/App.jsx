@@ -18,8 +18,11 @@ import StaffVolunteers from "./pages/StaffVolunteers";
 import StaffTasks from "./pages/StaffTasks";
 import AdminCertificates from "./pages/AdminCertificates";
 import CertificateView from "./pages/CertificateView";
+import MedicalDashboard from "./pages/MedicalDashboard";
+import MedicalRecords from "./pages/MedicalRecords";
 
 const staff = ["shelter_staff", "admin"];
+const medicalRoles = ["shelter_staff", "veterinarian", "admin"];
 const responders = ["volunteer", "shelter_staff", "admin"];
 
 export default function App() {
@@ -41,6 +44,11 @@ export default function App() {
           element={<ProtectedRoute roles={staff}><AddPet /></ProtectedRoute>} />
         <Route path="/staff/applications"
           element={<ProtectedRoute roles={staff}><ManageApplications /></ProtectedRoute>} />
+
+        <Route path="/medical"
+  element={<ProtectedRoute roles={medicalRoles}><MedicalDashboard /></ProtectedRoute>} />
+<Route path="/medical/:petId"
+  element={<ProtectedRoute roles={medicalRoles}><MedicalRecords /></ProtectedRoute>} />
 
         <Route path="*" element={<p className="p-6">Page not found</p>} />
 

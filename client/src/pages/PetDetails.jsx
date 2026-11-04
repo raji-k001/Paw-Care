@@ -20,6 +20,16 @@ export default function PetDetails() {
   if (error) return <p className="p-6 text-red-600">{error}</p>;
   if (!pet) return <p className="p-6 text-gray-500">Loading...</p>;
 
+  const canSeeMedical =
+  user &&
+  (["admin", "veterinarian"].includes(user.role) ||
+    (user.role === "shelter_staff" && pet.addedBy?._id === user._id));
+
+  {canSeeMedical && (
+  <Link to={`/medical/${pet._id}`} className="mt-3 inline-block text-sm text-orange-600 underline">
+    Medical records
+  </Link>
+)}
   const details = [
     ["Species", pet.species], ["Breed", pet.breed], ["Age", pet.age != null && `${pet.age} years`],
     ["Gender", pet.gender], ["Size", pet.size], ["Color", pet.color],

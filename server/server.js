@@ -11,7 +11,8 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import volunteerRoutes from "./routes/volunteerRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
-
+import medicalRoutes from "./routes/medicalRoutes.js";
+import { startReminderJob } from "./utils/reminders.js";
 
 dotenv.config();
 connectDB();
@@ -26,6 +27,9 @@ app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+startReminderJob();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/pets", petRoutes);
@@ -48,3 +52,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/certificates", certificateRoutes);
+
+app.use("/api/certificates", certificateRoutes);
+app.use("/api/medical", medicalRoutes);

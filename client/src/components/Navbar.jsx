@@ -6,6 +6,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isStaff = user && ["shelter_staff", "admin"].includes(user.role);
+  const isMedical = user && ["shelter_staff", "veterinarian", "admin"].includes(user.role);
   const isResponder = user && ["volunteer", "shelter_staff", "admin"].includes(user.role);
 
   const handleLogout = () => {
@@ -42,6 +43,7 @@ export default function Navbar() {
               <Link to="/rescues" className={link}>Rescue Cases</Link>
               <Link to="/staff/volunteers" className={link}>Volunteers</Link>
               <Link to="/staff/tasks" className={link}>Volunteer Tasks</Link>
+              {isMedical && <Link to="/medical" className={link}>Medical</Link>}
             </>
           )}
           {user?.role === "admin" && <Link to="/admin/certificates" className={link}>Certificates</Link>}

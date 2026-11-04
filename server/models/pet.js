@@ -17,6 +17,7 @@ const petSchema = new mongoose.Schema(
     location: { type: String, required: true, trim: true }, // city
     vaccinated: { type: Boolean, default: false },
     sterilized: { type: Boolean, default: false },
+    specialCare: { type: String, maxlength: 500, select: false }, // hidden from public pet queries
     status: {
       type: String,
       enum: ["Available", "Pending", "Adopted"],
