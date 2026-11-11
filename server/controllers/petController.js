@@ -136,6 +136,7 @@ export const deletePet = async (req, res) => {
   try {
     const pet = await Pet.findById(req.params.id);
     if (!pet) return res.status(404).json({ message: "Pet not found" });
+    if (pet.listed === false) return res.status(404).json({ message: "Pet not found" });
     if (!canModify(pet, req.user)) {
       return res.status(403).json({ message: "You can only delete pets you added" });
     }

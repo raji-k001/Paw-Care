@@ -60,6 +60,12 @@ export default function RescueDetails() {
 
       <div className="mt-3 space-y-5 rounded-lg bg-white p-5 shadow">
         <div className="flex flex-wrap items-center gap-2">
+          {isStaff && rescue.possibleDuplicateOf && (
+  <p className="rounded bg-yellow-50 p-3 text-sm text-yellow-800">
+    ⚠️ Possible duplicate: another case of the same animal was reported nearby within 24 hours.{" "}
+    <Link to={`/rescues/${rescue.possibleDuplicateOf._id}`} className="underline">Open that case</Link>
+  </p>
+)}
           <h1 className="text-2xl font-bold capitalize">{rescue.species} · {rescue.category}</h1>
           <UrgencyBadge urgency={rescue.urgency} />
           <RescueStatusBadge status={rescue.status} />

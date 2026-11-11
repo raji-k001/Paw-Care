@@ -35,6 +35,10 @@ import ComparePets from "./pages/ComparePets";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CompareBar from "./components/CompareBar";
+import LostFound from "./pages/LostFound";
+import ReportLostFound from "./pages/ReportLostFound";
+import LostFoundDetails from "./pages/LostFoundDetails";
+import AdminFlags from "./pages/AdminFlags";
 
 const staff = ["shelter_staff", "admin"];
 const medicalRoles = ["shelter_staff", "veterinarian", "admin"];
@@ -84,6 +88,12 @@ export default function App() {
 <Route path="/compare" element={<ComparePets />} />
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+<Route path="/lostfound" element={<LostFound />} />
+<Route path="/lostfound/new" element={<ProtectedRoute><ReportLostFound /></ProtectedRoute>} />
+<Route path="/lostfound/:id" element={<LostFoundDetails />} />
+<Route path="/admin/reports"
+  element={<ProtectedRoute roles={["admin"]}><AdminFlags /></ProtectedRoute>} />
 
         <Route path="*" element={<p className="p-6">Page not found</p>} />
         <Route path="/admin/dashboard"

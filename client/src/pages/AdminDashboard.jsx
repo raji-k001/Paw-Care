@@ -99,6 +99,7 @@ export default function AdminDashboard() {
     [data.attention.pendingCertificates, "certificate request(s) to review", "/admin/certificates"],
     [data.attention.overdueFollowUps, "overdue medical follow-up(s)", "/medical"],
     [data.attention.pendingShelters, "shelter registration(s) waiting for approval", "/admin/shelters"],
+    [data.attention.openFlags, "reported listing(s) to review", "/admin/reports"],
   ].filter(([count]) => count > 0);
 
   return (

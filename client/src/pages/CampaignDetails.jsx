@@ -1,3 +1,4 @@
+import ReportButton from "../components/ReportButton";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
@@ -275,41 +276,44 @@ export default function CampaignDetails() {
       </section>
 
       {canManage && (
-        <section className="space-y-4 rounded-lg border-2 border-dashed border-orange-300 p-5">
-          <h2 className="font-semibold">Manage this campaign</h2>
-          <EditForm
-  key={campaign.updatedAt}
-  campaign={campaign}
-  onSave={(body) => manage(() => api.put(`/campaigns/${id}`, body), "Campaign updated")}
-/>
-          <label className="block text-sm">
-            Status
-            <select value={campaign.status} className={`${input} mt-1 max-w-xs`}
-              onChange={(e) => manage(() => api.put(`/campaigns/${id}`, { status: e.target.value }), "Status updated")}>
-              <option>Active</option>
-              <option>Completed</option>
-              <option>Closed</option>
-            </select>
-          </label>
+        <>
+          <section className="space-y-4 rounded-lg border-2 border-dashed border-orange-300 p-5">
+            <h2 className="font-semibold">Manage this campaign</h2>
+            <EditForm
+              key={campaign.updatedAt}
+              campaign={campaign}
+              onSave={(body) => manage(() => api.put(`/campaigns/${id}`, body), "Campaign updated")}
+            />
+            <label className="block text-sm">
+              Status
+              <select value={campaign.status} className={`${input} mt-1 max-w-xs`}
+                onChange={(e) => manage(() => api.put(`/campaigns/${id}`, { status: e.target.value }), "Status updated")}>
+                <option>Active</option>
+                <option>Completed</option>
+                <option>Closed</option>
+              </select>
+            </label>
 
-          <form onSubmit={addExpense} className="space-y-3">
-            <p className="text-sm font-medium">Record an expense</p>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <input required placeholder="What was it for? *" value={expense.description}
-                onChange={(e) => setExpense({ ...expense, description: e.target.value })}
-                className={`${input} sm:col-span-2`} />
-              <input required type="number" min="1" step="1" placeholder="Amount (₹) *" value={expense.amount}
-                onChange={(e) => setExpense({ ...expense, amount: e.target.value })} className={input} />
-              <input type="date" value={expense.date}
-                onChange={(e) => setExpense({ ...expense, date: e.target.value })} className={input} />
-              <input key={fileKey} type="file" accept="image/*,.pdf"
-                onChange={(e) => setReceipt(e.target.files[0] || null)} className="text-sm sm:col-span-2" />
-            </div>
-            <button className="rounded bg-orange-600 px-4 py-2 text-sm text-white hover:bg-orange-700">
-              Add expense
-            </button>
-          </form>
-        </section>
+            <form onSubmit={addExpense} className="space-y-3">
+              <p className="text-sm font-medium">Record an expense</p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <input required placeholder="What was it for? *" value={expense.description}
+                  onChange={(e) => setExpense({ ...expense, description: e.target.value })}
+                  className={`${input} sm:col-span-2`} />
+                <input required type="number" min="1" step="1" placeholder="Amount (₹) *" value={expense.amount}
+                  onChange={(e) => setExpense({ ...expense, amount: e.target.value })} className={input} />
+                <input type="date" value={expense.date}
+                  onChange={(e) => setExpense({ ...expense, date: e.target.value })} className={input} />
+                <input key={fileKey} type="file" accept="image/*,.pdf"
+                  onChange={(e) => setReceipt(e.target.files[0] || null)} className="text-sm sm:col-span-2" />
+              </div>
+              <button className="rounded bg-orange-600 px-4 py-2 text-sm text-white hover:bg-orange-700">
+                Add expense
+              </button>
+            </form>
+          </section>
+          <ReportButton targetType="campaign" targetId={campaign._id} />
+        </>
       )}
     </div>
   );

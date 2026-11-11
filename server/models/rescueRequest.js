@@ -23,6 +23,7 @@ const rescueSchema = new mongoose.Schema(
       default: "Reported",
     },
     assignedTo: userRef,
+    possibleDuplicateOf: { type: mongoose.Schema.Types.ObjectId, ref: "RescueRequest" },
     assignedBy: userRef,
     resolutionNote: String,
     history: [

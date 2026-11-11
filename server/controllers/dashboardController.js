@@ -8,6 +8,8 @@ import MedicalRecord from "../models/medicalRecord.js";
 import Certificate from "../models/certificate.js";
 import Donation from "../models/Donation.js";
 import Campaign from "../models/Campaign.js";
+import ContentFlag from "../models/ContentFlag.js";
+
 
 const IST_MS = 5.5 * 60 * 60 * 1000; // India is UTC+5:30
 const sum = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
@@ -116,6 +118,8 @@ export const getDashboard = async (req, res) => {
   Shelter.countDocuments({ status: "Pending" }),
 ]);
 
+  const openFlags = await ContentFlag.countDocuments({ status: "Open" });  
+
     res.json({
       users: { total: sum(usersByRole), byRole: usersByRole },
       pets: {
@@ -143,6 +147,7 @@ export const getDashboard = async (req, res) => {
         pendingCertificates,
         overdueFollowUps,
         pendingShelters,
+        openFlags,
       },
       shelters: { approved: approvedShelters },
 

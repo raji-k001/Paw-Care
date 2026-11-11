@@ -24,6 +24,7 @@ export default function Navbar() {
           <Link to="/" className={link}>Find a Pet</Link>
           <Link to="/campaigns" className={link}>Donate</Link>
           <Link to="/shelters" className={link}>Shelters</Link>
+          <Link to="/lostfound" className={link}>Lost &amp; Found</Link>
           {user && (
             <>
               <Link to="/my-applications" className={link}>My Applications</Link>
@@ -60,6 +61,7 @@ export default function Navbar() {
     <Link to="/admin/shelters" className={link}>Manage Shelters</Link>
     <Link to="/admin/certificates" className={link}>Certificates</Link>
     <Link to="/favorites" className={link}>Favorites</Link>
+    <Link to="/admin/reports" className={link}>Reports</Link>
   </>
 )}
 

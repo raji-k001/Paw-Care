@@ -1,5 +1,5 @@
-import RescueRequest from "../models/rescueREquest.js";
-import User from "../models/User.js";
+import RescueRequest from "../models/rescueRequest.js";
+import User from "../models/user.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { notify, notifyStaff } from "../utils/notify.js";
 
@@ -32,6 +32,21 @@ export const createRescue = async (req, res) => {
       location: { type: "Point", coordinates: [longitude, latitude] },
       history: [{ status: "Reported", by: req.user._id, note: "Report submitted" }],
     });
+        // Flag a possible duplicate for staff: same animal, still open, within 300 m, in the last 24 hours
+    try {
+      const pattern = new RegExp("^" + String(species).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$", "i");
+      const nearby = await RescueRequest.findOne({
+        _id: { $ne: rescue._id },
+        species: pattern,
+        status: { $ne: "Resolved" },
+        createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        location: { $geoWithin: { $centerSphere: [[longitude, latitude], 0.3 / 6378.1] } },
+      }).select("_id");
+      if (nearby) await RescueRequest.updateOne({ _id: rescue._id }, { possibleDuplicateOf: nearby._id });
+    } catch {
+      // this check must never stop a rescue report from being saved
+    }
+
     notifyStaff(
   {
     type: "rescue",
@@ -95,7 +110,8 @@ export const getRescueById = async (req, res) => {
     const rescue = await RescueRequest.findById(req.params.id)
       .populate("reportedBy", "name email phone")
       .populate("assignedTo", "name role phone")
-      .populate("history.by", "name");
+      .populate("history.by", "name")
+      .populate("possibleDuplicateOf", "status urgency");
     if (!rescue) return res.status(404).json({ message: "Rescue case not found" });
 
     const allowed =

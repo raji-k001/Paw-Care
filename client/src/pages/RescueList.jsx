@@ -81,6 +81,9 @@ export default function RescueList({ mode }) {
                   <span className="font-semibold capitalize">{c.species} · {c.category}</span>
                   <UrgencyBadge urgency={c.urgency} />
                   <RescueStatusBadge status={c.status} />
+                  {mode === "all" && c.possibleDuplicateOf && (
+  <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">Possible duplicate</span>
+)}
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-gray-600">{c.description}</p>
                 <p className="mt-1 text-xs text-gray-500">

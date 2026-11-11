@@ -1,3 +1,4 @@
+import ReportButton from "../components/ReportButton";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axios";
@@ -70,6 +71,7 @@ export default function PetDetails() {
           </dl>
           {pet.description && <p className="mt-4 text-gray-700">{pet.description}</p>}
           <p className="mt-4 text-sm text-gray-500">Listed by {pet.addedBy?.name}</p>
+          <div className="mt-3"><ReportButton targetType="pet" targetId={pet._id} /></div>
           {pet.shelter && (
   <p className="text-sm text-gray-500">
     Shelter: {pet.shelter.name}, {pet.shelter.city} · {pet.shelter.phone}
