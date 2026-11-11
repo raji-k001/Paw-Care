@@ -22,13 +22,19 @@ export default function Navbar() {
         <Link to="/" className="text-xl font-bold text-orange-600">🐾 PawCare</Link>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <Link to="/" className={link}>Find a Pet</Link>
+          <Link to="/campaigns" className={link}>Donate</Link>
+          <Link to="/shelters" className={link}>Shelters</Link>
           {user && (
             <>
               <Link to="/my-applications" className={link}>My Applications</Link>
+              <Link to="/my-donations" className={link}>My Donations</Link>
               <Link to="/rescues/new" className="font-medium text-red-600 hover:text-red-700">Report Rescue</Link>
               <Link to="/rescues/mine" className={link}>My Reports</Link>
             </>
           )}
+          {user && user.role !== "veterinarian" && <Link to="/shelter" className={link}>My Shelter</Link>}
+
+{isResponder && <Link to="/rescues/assigned" className={link}>My Rescue Cases</Link>}
           {isResponder && <Link to="/rescues/assigned" className={link}>My Rescue Cases</Link>}
           {user?.role === "volunteer" && (
             <>
@@ -43,10 +49,19 @@ export default function Navbar() {
               <Link to="/rescues" className={link}>Rescue Cases</Link>
               <Link to="/staff/volunteers" className={link}>Volunteers</Link>
               <Link to="/staff/tasks" className={link}>Volunteer Tasks</Link>
+              <Link to="/campaigns/new" className={link}>New Campaign</Link>
               {isMedical && <Link to="/medical" className={link}>Medical</Link>}
             </>
           )}
-          {user?.role === "admin" && <Link to="/admin/certificates" className={link}>Certificates</Link>}
+        
+        {user?.role === "admin" && (
+  <>
+    <Link to="/admin/dashboard" className={`${link} font-medium`}>Dashboard</Link>
+    <Link to="/admin/shelters" className={link}>Manage Shelters</Link>
+    <Link to="/admin/certificates" className={link}>Certificates</Link>
+  </>
+)}
+
           {user ? (
             <>
               <NotificationBell />

@@ -20,6 +20,16 @@ import AdminCertificates from "./pages/AdminCertificates";
 import CertificateView from "./pages/CertificateView";
 import MedicalDashboard from "./pages/MedicalDashboard";
 import MedicalRecords from "./pages/MedicalRecords";
+import AdminDashboard from "./pages/AdminDashboard";
+import Campaigns from "./pages/Campaigns";
+import CampaignDetails from "./pages/CampaignDetails";
+import CreateCampaign from "./pages/CreateCampaign";
+import MyDonations from "./pages/MyDonations";
+import Receipt from "./pages/Receipt";
+import RegisterShelter from "./pages/RegisterShelter";
+import ShelterDirectory from "./pages/ShelterDirectory";
+import ShelterHub from "./pages/ShelterHub";
+import AdminShelters from "./pages/AdminShelters";
 
 const staff = ["shelter_staff", "admin"];
 const medicalRoles = ["shelter_staff", "veterinarian", "admin"];
@@ -50,7 +60,24 @@ export default function App() {
 <Route path="/medical/:petId"
   element={<ProtectedRoute roles={medicalRoles}><MedicalRecords /></ProtectedRoute>} />
 
+  <Route path="/campaigns" element={<Campaigns />} />
+<Route path="/campaigns/new"
+  element={<ProtectedRoute roles={staff}><CreateCampaign /></ProtectedRoute>} />
+<Route path="/campaigns/:id" element={<CampaignDetails />} />
+<Route path="/my-donations" element={<ProtectedRoute><MyDonations /></ProtectedRoute>} />
+<Route path="/donations/:id/receipt" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
+
+<Route path="/shelters" element={<ShelterDirectory />} />
+<Route path="/shelters/register"
+  element={<ProtectedRoute roles={["adopter", "volunteer"]}><RegisterShelter /></ProtectedRoute>} />
+<Route path="/shelter"
+  element={<ProtectedRoute roles={["adopter", "volunteer", "shelter_staff", "admin"]}><ShelterHub /></ProtectedRoute>} />
+<Route path="/admin/shelters"
+  element={<ProtectedRoute roles={["admin"]}><AdminShelters /></ProtectedRoute>} />
+
         <Route path="*" element={<p className="p-6">Page not found</p>} />
+        <Route path="/admin/dashboard"
+  element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
 
         <Route path="/rescues/new" element={<ProtectedRoute><ReportRescue /></ProtectedRoute>} />
 <Route path="/rescues/mine" element={<ProtectedRoute><RescueList mode="mine" /></ProtectedRoute>} />

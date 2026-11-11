@@ -13,6 +13,10 @@ import taskRoutes from "./routes/taskRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
 import medicalRoutes from "./routes/medicalRoutes.js";
 import { startReminderJob } from "./utils/reminders.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import campaignRoutes from "./routes/campaignRoutes.js";
+import donationRoutes from "./routes/donationRoutes.js";
+import shelterRoutes from "./routes/shelterRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -55,3 +59,13 @@ app.use("/api/certificates", certificateRoutes);
 
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/medical", medicalRoutes);
+
+app.use("/api/medical", medicalRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/campaigns", campaignRoutes);
+app.use("/api/donations", donationRoutes);
+
+app.use("/api/donations", donationRoutes);
+app.use("/api/shelters", shelterRoutes);

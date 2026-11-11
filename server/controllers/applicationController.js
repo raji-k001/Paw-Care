@@ -1,10 +1,11 @@
 import Application from "../models/adoptionApplication.js";
-import Pet from "../models/pet.js";
+import Pet from "../models/Pet.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { notify } from "../utils/notify.js";
+import Movement from "../models/AnimalMovement.js";
+import { canManagePet as canReview, managedPetsFilter } from "../utils/access.js";
 
-const canReview = (pet, user) =>
-  user.role === "admin" || pet.addedBy.toString() === user._id.toString();
+
 
 // POST /api/applications
 export const createApplication = async (req, res) => {
@@ -76,7 +77,7 @@ export const getApplications = async (req, res) => {
     if (req.query.status) filter.status = req.query.status;
 
     if (req.user.role !== "admin") {
-      const myPetIds = await Pet.find({ addedBy: req.user._id }).distinct("_id");
+      const myPetIds = await Pet.find(managedPetsFilter(req.user)).distinct("_id");
       filter.pet = { $in: myPetIds };
     }
 
@@ -142,8 +143,15 @@ export const getApplicationById = async (req, res) => {
       }
       if (visitDate) application.visitDate = visitDate;
 
-      // 1. Mark the pet as adopted
+           // 1. Mark the pet as adopted
       application.pet.status = "Adopted";
+      if (application.pet.shelter) {
+        application.pet.careStatus = "Discharged"; // it has left the shelter
+        await Movement.create({
+          shelter: application.pet.shelter, pet: application.pet._id,
+          type: "discharge", reason: "adopted", by: req.user._id,
+        });
+      }
       await application.pet.save();
 
       // 2. Find the other pending applicants first, so we can notify them

@@ -23,6 +23,9 @@ const petSchema = new mongoose.Schema(
       enum: ["Available", "Pending", "Adopted"],
       default: "Available",
     },
+    shelter: { type: mongoose.Schema.Types.ObjectId, ref: "Shelter" },
+    careStatus: { type: String, enum: ["In care", "Discharged"], default: "In care" },
+    listed: { type: Boolean, default: true }, // false = hidden from the public list (e.g. released)
     images: [{ url: String, public_id: String }],
     addedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },

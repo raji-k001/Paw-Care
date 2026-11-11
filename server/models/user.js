@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
       enum: ["adopter", "volunteer", "shelter_staff", "veterinarian", "admin"],
       default: "adopter",
     },
+    shelter: { type: mongoose.Schema.Types.ObjectId, ref: "Shelter" },
   },
   { timestamps: true }
 );

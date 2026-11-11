@@ -1,7 +1,8 @@
 import MedicalRecord from "../models/medicalRecord.js";
-import Pet from "../models/pet.js";
+import Pet from "../models/Pet.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import { sendDueReminders } from "../utils/reminders.js";
+import { canManagePet, managedPetsFilter } from "../utils/access.js";
 
 const DAY = 24 * 60 * 60 * 1000;
 const TYPES = ["vaccination", "deworming", "checkup", "treatment", "surgery", "sterilization", "other"];
@@ -9,8 +10,7 @@ const sameId = (a, b) => a && b && a.toString() === b.toString();
 
 // Admins and vets see every pet. Shelter staff see only the pets they listed.
 const canAccess = (pet, user) =>
-  ["admin", "veterinarian"].includes(user.role) ||
-  (user.role === "shelter_staff" && sameId(pet.addedBy, user._id));
+  ["admin", "veterinarian"].includes(user.role) || canManagePet(pet, user);
 
 // Loads the pet from :petId and checks access. Sends the error itself and returns null on failure.
 const getPetOrFail = async (req, res) => {
@@ -34,7 +34,7 @@ const getPetOrFail = async (req, res) => {
 // GET /api/medical/pets  - pets this user may open
 export const listPets = async (req, res) => {
   try {
-    const filter = req.user.role === "shelter_staff" ? { addedBy: req.user._id } : {};
+    const filter = req.user.role === "shelter_staff" ? managedPetsFilter(req.user) : {};
     const pets = await Pet.find(filter)
       .select("name species breed status images")
       .sort({ name: 1 })
@@ -171,7 +171,7 @@ export const getDue = async (req, res) => {
     const filter = { followUpDone: false, nextDueDate: { $lte: new Date(Date.now() + 30 * DAY) } };
 
     if (req.user.role === "shelter_staff") {
-      const myPetIds = await Pet.find({ addedBy: req.user._id }).distinct("_id");
+      const myPetIds = await Pet.find(managedPetsFilter(req.user)).distinct("_id");
       filter.pet = { $in: myPetIds };
     }
 

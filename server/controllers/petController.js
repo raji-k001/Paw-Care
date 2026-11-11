@@ -1,19 +1,52 @@
-import Pet from "../models/pet.js";
+import Pet from "../models/Pet.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import Shelter from "../models/Shelter.js";
+import Movement from "../models/AnimalMovement.js";
+import { canManagePet as canModify } from "../utils/access.js";
 
 const uploadImages = (files = []) => Promise.all(files.map((f) => uploadToCloudinary(f.buffer)));
-
-// Staff can only change their own pets. Admin can change any.
-const canModify = (pet, user) =>
-  user.role === "admin" || pet.addedBy.toString() === user._id.toString();
 
 // POST /api/pets
 export const createPet = async (req, res) => {
   try {
+    // shelter, careStatus, listed and images are set by the server, never by the client
+    const fields = { ...req.body };
+    ["shelterId", "shelter", "careStatus", "listed", "addedBy", "images"].forEach((k) => delete fields[k]);
+
+    let shelter = null;
+    if (req.user.role === "admin") {
+      if (req.body.shelterId) {
+        shelter = await Shelter.findById(req.body.shelterId);
+        if (!shelter) return res.status(404).json({ message: "Shelter not found" });
+      }
+    } else if (req.user.shelter) {
+      shelter = await Shelter.findById(req.user.shelter);
+    }
+
+    if (req.user.role !== "admin" && !shelter) {
+      return res.status(403).json({ message: "You need an approved shelter before you can add pets" });
+    }
+    if (shelter) {
+      if (shelter.status !== "Approved") {
+        return res.status(400).json({ message: "This shelter has not been approved yet" });
+      }
+      const occupied = await Pet.countDocuments({ shelter: shelter._id, careStatus: { $ne: "Discharged" } });
+      if (occupied >= shelter.capacity) {
+        return res.status(400).json({ message: `${shelter.name} is full (${occupied} of ${shelter.capacity} places used)` });
+      }
+    }
+
     const images = await uploadImages(req.files);
-    const pet = await Pet.create({ ...req.body, images, addedBy: req.user._id });
+    const pet = await Pet.create({ ...fields, images, addedBy: req.user._id, shelter: shelter?._id });
+
+    if (shelter) {
+      await Movement.create({
+        shelter: shelter._id, pet: pet._id, type: "intake", reason: "new_listing", by: req.user._id,
+      });
+    }
     res.status(201).json(pet);
   } catch (error) {
+    if (error.name === "CastError") return res.status(404).json({ message: "Shelter not found" });
     res.status(400).json({ message: error.message });
   }
 };
@@ -26,7 +59,7 @@ export const getPets = async (req, res) => {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = Math.min(parseInt(req.query.limit) || 12, 50);
 
-    const filter = {};
+    const filter = { listed: { $ne: false } };
     if (species) filter.species = species;
     if (gender) filter.gender = gender;
     if (size) filter.size = size;
@@ -64,7 +97,7 @@ export const getPets = async (req, res) => {
 // GET /api/pets/:id
 export const getPetById = async (req, res) => {
   try {
-    const pet = await Pet.findById(req.params.id).populate("addedBy", "name email phone");
+    const pet = await Pet.findById(req.params.id).populate("addedBy", "name email phone")  .populate("shelter", "name city phone email");
     if (!pet) return res.status(404).json({ message: "Pet not found" });
     res.json(pet);
   } catch (error) {
@@ -84,7 +117,8 @@ export const updatePet = async (req, res) => {
     }
 
     const newImages = await uploadImages(req.files);
-    const { addedBy, images, ...updates } = req.body; // never let the client change these
+    const updates = { ...req.body };
+    ["addedBy", "images", "shelter", "shelterId", "careStatus", "listed"].forEach((k) => delete updates[k]);
     Object.assign(pet, updates);
     pet.images.push(...newImages);
 

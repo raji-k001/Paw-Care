@@ -1,14 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 const input = "w-full rounded border border-gray-300 px-3 py-2";
 
 export default function AddPet() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+const [shelters, setShelters] = useState([]);
+useEffect(() => {
+  if (user.role === "admin") api.get("/shelters").then((res) => setShelters(res.data)).catch(() => {});
+}, [user.role]);
   const [form, setForm] = useState({
     name: "", species: "dog", breed: "", age: "", gender: "unknown", size: "",
     color: "", location: "", description: "", vaccinated: false, sterilized: false,
+    
   });
   const [images, setImages] = useState([]);
   const [error, setError] = useState("");
@@ -59,6 +66,12 @@ export default function AddPet() {
           <input name="breed" placeholder="Breed" value={form.breed} onChange={update} className={input} />
           <input name="age" type="number" min="0" step="0.5" placeholder="Age in years"
             value={form.age} onChange={update} className={input} />
+            {user.role === "admin" && (
+  <select name="shelterId" value={form.shelterId} onChange={update} className={input}>
+    <option value="">No shelter (unassigned)</option>
+    {shelters.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.city})</option>)}
+  </select>
+)}
           <select name="gender" value={form.gender} onChange={update} className={input}>
             <option value="unknown">Gender: unknown</option>
             <option value="male">Male</option>

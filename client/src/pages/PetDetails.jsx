@@ -20,10 +20,7 @@ export default function PetDetails() {
   if (error) return <p className="p-6 text-red-600">{error}</p>;
   if (!pet) return <p className="p-6 text-gray-500">Loading...</p>;
 
-  const canSeeMedical =
-  user &&
-  (["admin", "veterinarian"].includes(user.role) ||
-    (user.role === "shelter_staff" && pet.addedBy?._id === user._id));
+ const canSeeMedical = user && ["admin", "veterinarian", "shelter_staff"].includes(user.role);
 
   {canSeeMedical && (
   <Link to={`/medical/${pet._id}`} className="mt-3 inline-block text-sm text-orange-600 underline">
@@ -73,7 +70,11 @@ export default function PetDetails() {
           </dl>
           {pet.description && <p className="mt-4 text-gray-700">{pet.description}</p>}
           <p className="mt-4 text-sm text-gray-500">Listed by {pet.addedBy?.name}</p>
-
+          {pet.shelter && (
+  <p className="text-sm text-gray-500">
+    Shelter: {pet.shelter.name}, {pet.shelter.city} · {pet.shelter.phone}
+  </p>
+)}
           {pet.status === "Adopted" ? (
             <p className="mt-5 rounded bg-gray-100 p-3 text-gray-600">This pet has been adopted 🎉</p>
           ) : user ? (
