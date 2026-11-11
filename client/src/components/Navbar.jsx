@@ -59,6 +59,7 @@ export default function Navbar() {
     <Link to="/admin/dashboard" className={`${link} font-medium`}>Dashboard</Link>
     <Link to="/admin/shelters" className={link}>Manage Shelters</Link>
     <Link to="/admin/certificates" className={link}>Certificates</Link>
+    <Link to="/favorites" className={link}>Favorites</Link>
   </>
 )}
 

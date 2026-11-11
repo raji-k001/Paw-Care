@@ -17,6 +17,7 @@ import dashboardRoutes from "./routes/dashboardRoutes.js";
 import campaignRoutes from "./routes/campaignRoutes.js";
 import donationRoutes from "./routes/donationRoutes.js";
 import shelterRoutes from "./routes/shelterRoutes.js";
+import favoriteRoutes from "./routes/favoriteRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -69,3 +70,6 @@ app.use("/api/donations", donationRoutes);
 
 app.use("/api/donations", donationRoutes);
 app.use("/api/shelters", shelterRoutes);
+
+app.use("/api/shelters", shelterRoutes);
+app.use("/api/favorites", favoriteRoutes);

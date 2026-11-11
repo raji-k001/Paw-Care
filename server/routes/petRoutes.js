@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createPet, getPets, getPetById, updatePet, deletePet,
+  createPet, getPets, getPetById, updatePet, deletePet,comparePets,
 } from "../controllers/petController.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
@@ -14,6 +14,7 @@ router
   .post(...staffOnly, upload.array("images", 5), createPet);
 
 router
+  .get("/compare", comparePets)
   .route("/:id")
   .get(getPetById) // public
   .put(...staffOnly, upload.array("images", 5), updatePet)

@@ -30,6 +30,11 @@ import RegisterShelter from "./pages/RegisterShelter";
 import ShelterDirectory from "./pages/ShelterDirectory";
 import ShelterHub from "./pages/ShelterHub";
 import AdminShelters from "./pages/AdminShelters";
+import Favorites from "./pages/Favorites";
+import ComparePets from "./pages/ComparePets";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import CompareBar from "./components/CompareBar";
 
 const staff = ["shelter_staff", "admin"];
 const medicalRoles = ["shelter_staff", "veterinarian", "admin"];
@@ -75,6 +80,11 @@ export default function App() {
 <Route path="/admin/shelters"
   element={<ProtectedRoute roles={["admin"]}><AdminShelters /></ProtectedRoute>} />
 
+<Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+<Route path="/compare" element={<ComparePets />} />
+<Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password/:token" element={<ResetPassword />} />
+
         <Route path="*" element={<p className="p-6">Page not found</p>} />
         <Route path="/admin/dashboard"
   element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
@@ -100,6 +110,7 @@ export default function App() {
 <Route path="/certificates/:id"
   element={<ProtectedRoute><CertificateView /></ProtectedRoute>} />
       </Routes>
+      <CompareBar />
     </div>
   );
 }

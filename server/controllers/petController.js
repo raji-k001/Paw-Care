@@ -3,6 +3,7 @@ import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js
 import Shelter from "../models/Shelter.js";
 import Movement from "../models/AnimalMovement.js";
 import { canManagePet as canModify } from "../utils/access.js";
+import mongoose from "mongoose";
 
 const uploadImages = (files = []) => Promise.all(files.map((f) => uploadToCloudinary(f.buffer)));
 
@@ -144,6 +145,25 @@ export const deletePet = async (req, res) => {
     res.json({ message: "Pet deleted" });
   } catch (error) {
     if (error.name === "CastError") return res.status(404).json({ message: "Pet not found" });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET /api/pets/compare?ids=a,b,c  (public) - 2 or 3 pets side by side
+export const comparePets = async (req, res) => {
+  try {
+    const ids = [...new Set(String(req.query.ids || "").split(",").map((s) => s.trim()).filter(Boolean))];
+    if (ids.length < 2 || ids.length > 3) {
+      return res.status(400).json({ message: "Choose 2 or 3 pets to compare" });
+    }
+    if (!ids.every((id) => mongoose.isValidObjectId(id))) {
+      return res.status(400).json({ message: "Invalid pet id" });
+    }
+
+    const pets = await Pet.find({ _id: { $in: ids }, listed: { $ne: false } }).populate("shelter", "name city");
+    const byId = new Map(pets.map((p) => [p._id.toString(), p]));
+    res.json(ids.map((id) => byId.get(id)).filter(Boolean)); // keep the order the user picked
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

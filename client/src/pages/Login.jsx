@@ -38,6 +38,9 @@ export default function Login() {
           className="w-full rounded bg-orange-600 py-2 text-white hover:bg-orange-700 disabled:opacity-50">
           {loading ? "Logging in..." : "Login"}
         </button>
+        <Link to="/forgot-password" className="block text-right text-sm text-orange-600">
+  Forgot password?
+</Link>
       </form>
       <p className="mt-4 text-sm text-gray-500">
         New here? <Link to="/register" className="text-orange-600">Create an account</Link>
