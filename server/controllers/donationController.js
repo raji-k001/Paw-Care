@@ -1,3 +1,4 @@
+import User from "../models/User.js";
 import crypto from "crypto";
 import Razorpay from "razorpay";
 import Campaign from "../models/Campaign.js";
@@ -70,6 +71,42 @@ export const createOrder = async (req, res) => {
   }
 };
 
+// Marks a donation as paid exactly once and adds it to the campaign total.
+// Both the browser confirmation (/verify) and Razorpay's webhook use it.
+const finalizeDonation = async (donationId, paymentId) => {
+  const paid = await Donation.findOneAndUpdate(
+    { _id: donationId, status: "Created" },
+    {
+      status: "Paid",
+      razorpayPaymentId: paymentId,
+      paidAt: new Date(),
+      receiptNumber: `PCR-${new Date().getFullYear()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+    },
+    { new: true }
+  );
+  if (!paid) return null; // already confirmed by the other path
+
+  const [campaign, donor] = await Promise.all([
+    Campaign.findByIdAndUpdate(paid.campaign, { $inc: { raisedAmount: paid.amount } }, { new: true }),
+    User.findById(paid.donor).select("name"),
+  ]);
+
+  notify(paid.donor, {
+    type: "system",
+    message: `Thank you! Your donation of ₹${paid.amount} to "${campaign?.title}" was received.`,
+    link: `/donations/${paid._id}/receipt`,
+    email: "Thank you for your donation",
+  });
+  if (campaign) {
+    notify(campaign.createdBy, {
+      type: "system",
+      message: `${paid.anonymous ? "Someone" : donor?.name || "A supporter"} donated ₹${paid.amount} to "${campaign.title}"`,
+      link: `/campaigns/${campaign._id}`,
+    });
+  }
+  return paid;
+};
+
 // POST /api/donations/verify  body: { razorpay_order_id, razorpay_payment_id, razorpay_signature }
 export const verifyPayment = async (req, res) => {
   try {
@@ -80,9 +117,8 @@ export const verifyPayment = async (req, res) => {
 
     const donation = await Donation.findOne({ razorpayOrderId: razorpay_order_id, donor: req.user._id });
     if (!donation) return res.status(404).json({ message: "Donation not found" });
-    if (donation.status === "Paid") return res.json(donation); // already confirmed
+    if (donation.status === "Paid") return res.json(donation);
 
-    // Razorpay signs "orderId|paymentId" with our secret. Only a real payment has a matching signature.
     const expected = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -93,40 +129,8 @@ export const verifyPayment = async (req, res) => {
       crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(given));
     if (!valid) return res.status(400).json({ message: "Payment verification failed" });
 
-    // Created -> Paid can happen only once, even if this endpoint is called twice at the same time
-    const paid = await Donation.findOneAndUpdate(
-      { _id: donation._id, status: "Created" },
-      {
-        status: "Paid",
-        razorpayPaymentId: razorpay_payment_id,
-        paidAt: new Date(),
-        receiptNumber: `PCR-${new Date().getFullYear()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
-      },
-      { new: true }
-    );
-    if (!paid) return res.json(await Donation.findById(donation._id));
-
-    const campaign = await Campaign.findByIdAndUpdate(
-      paid.campaign,
-      { $inc: { raisedAmount: paid.amount } }, // atomic add
-      { new: true }
-    );
-
-    notify(paid.donor, {
-      type: "system",
-      message: `Thank you! Your donation of ₹${paid.amount} to "${campaign?.title}" was received.`,
-      link: `/donations/${paid._id}/receipt`,
-      email: "Thank you for your donation",
-    });
-    if (campaign) {
-      notify(campaign.createdBy, {
-        type: "system",
-        message: `${paid.anonymous ? "Someone" : req.user.name} donated ₹${paid.amount} to "${campaign.title}"`,
-        link: `/campaigns/${campaign._id}`,
-      });
-    }
-
-    res.json(paid);
+    const paid = await finalizeDonation(donation._id, razorpay_payment_id);
+    res.json(paid || (await Donation.findById(donation._id)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -163,5 +167,39 @@ export const getReceipt = async (req, res) => {
   } catch (error) {
     if (error.name === "CastError") return res.status(404).json({ message: "Donation not found" });
     res.status(500).json({ message: error.message });
+  }
+};
+
+// POST /api/webhooks/razorpay  (called by Razorpay, not by the browser)
+export const razorpayWebhook = async (req, res) => {
+  try {
+    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!secret) return res.status(503).send("Webhook not configured");
+    if (!Buffer.isBuffer(req.body)) return res.status(400).send("Bad request");
+
+    // The signature covers the exact raw bytes, so this route receives the body unparsed
+    const signature = String(req.headers["x-razorpay-signature"] || "");
+    const expected = crypto.createHmac("sha256", secret).update(req.body).digest("hex");
+    const valid =
+      expected.length === signature.length &&
+      crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+    if (!valid) return res.status(400).send("Invalid signature");
+
+    const event = JSON.parse(req.body.toString("utf8"));
+    if (["payment.captured", "order.paid"].includes(event.event)) {
+      const payment = event.payload?.payment?.entity;
+      const orderId = payment?.order_id;
+      if (orderId && payment?.id) {
+        const donation = await Donation.findOne({ razorpayOrderId: orderId, status: "Created" });
+        // Only accept it if the amount Razorpay received equals what we asked for
+        if (donation && payment.currency === "INR" && payment.amount === donation.amount * 100) {
+          await finalizeDonation(donation._id, payment.id);
+        }
+      }
+    }
+    res.json({ received: true });
+  } catch (error) {
+    console.error("Webhook error:", error.message);
+    res.status(500).send("Error"); // Razorpay retries after an error
   }
 };
