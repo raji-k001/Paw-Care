@@ -14,6 +14,13 @@ export const protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded.id);
     if (!req.user) return res.status(401).json({ message: "User no longer exists" });
+        // A token issued before the last password change is no longer valid
+    if (
+      req.user.passwordChangedAt &&
+      decoded.iat < Math.floor(req.user.passwordChangedAt.getTime() / 1000)
+    ) {
+      return res.status(401).json({ message: "Token expired because the password was changed. Please log in again." });
+    }
     next();
   } catch (error) {
     res.status(401).json({ message: "Token invalid or expired" });

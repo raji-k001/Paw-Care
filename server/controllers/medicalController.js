@@ -1,3 +1,4 @@
+import { audit } from "../utils/audit.js"; 
 import MedicalRecord from "../models/medicalRecord.js";
 import Pet from "../models/Pet.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
@@ -157,6 +158,9 @@ export const deleteRecord = async (req, res) => {
     if (!record) return res.status(404).json({ message: "Record not found" });
 
     await Promise.all(record.documents.map((d) => deleteFromCloudinary(d.public_id)));
+        audit(req, "medical.deleted", {
+      targetType: "medical", targetId: record._id, summary: `Deleted ${record.type} record "${record.title}"`,
+    });
     await record.deleteOne();
     res.json({ message: "Record deleted" });
   } catch (error) {

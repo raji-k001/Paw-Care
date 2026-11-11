@@ -1,3 +1,4 @@
+import { audit } from "../utils/audit.js"; 
 import crypto from "crypto";
 import Certificate from "../models/certificate.js";
 import VolunteerProfile from "../models/volunteerProfile.js";
@@ -95,6 +96,10 @@ export const reviewCertificate = async (req, res) => {
         .toUpperCase()}`;
     }
     await certificate.save();
+        audit(req, `certificate.${status.toLowerCase()}`, {
+      targetType: "certificate", targetId: certificate._id,
+      summary: `${status} a volunteer certificate (${certificate.hoursAtRequest} h)${note ? `: ${note}` : ""}`,
+    });
 
     notify(certificate.volunteer, {
       type: "system",

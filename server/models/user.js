@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
       default: "adopter",
     },
     shelter: { type: mongoose.Schema.Types.ObjectId, ref: "Shelter" },
+    passwordChangedAt: Date,
     favorites: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pet" }], select: false },
 resetPasswordToken: { type: String, select: false },
 resetPasswordExpires: { type: Date, select: false },

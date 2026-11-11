@@ -1,3 +1,4 @@
+import { audit } from "../utils/audit.js"; 
 import Shelter from "../models/Shelter.js";
 import User from "../models/user.js";
 import { notify } from "../utils/notify.js";
@@ -109,6 +110,10 @@ export const reviewShelter = async (req, res) => {
     shelter.reviewedBy = req.user._id;
     shelter.reviewedAt = new Date();
     await shelter.save();
+        audit(req, `shelter.${status.toLowerCase()}`, {
+      targetType: "shelter", targetId: shelter._id,
+      summary: `${status} shelter "${shelter.name}"${reason ? `: ${reason}` : ""}`,
+    });
 
     if (status === "Approved") {
       // The owner becomes shelter staff of this shelter
@@ -155,6 +160,9 @@ export const assignStaff = async (req, res) => {
     }
 
     await User.updateOne({ _id: user._id }, { role: "shelter_staff", shelter: shelter._id });
+        audit(req, "shelter.staff_added", {
+      targetType: "shelter", targetId: shelter._id, summary: `${user.name} added as staff of ${shelter.name}`,
+    });
     notify(user._id, {
       type: "system",
       message: `You are now staff at ${shelter.name}. Log out and log in again to see your staff tools.`,

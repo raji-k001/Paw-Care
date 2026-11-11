@@ -1,3 +1,4 @@
+import { audit } from "../utils/audit.js"; 
 import ContentFlag from "../models/ContentFlag.js";
 import Pet from "../models/Pet.js";
 import Campaign from "../models/Campaign.js";
@@ -147,6 +148,11 @@ export const reviewFlag = async (req, res) => {
       Object.assign(flag, { status: "Dismissed", ...review });
       await flag.save();
     }
+
+        audit(req, action === "remove" ? "flag.removed" : "flag.dismissed", {
+      targetType: "flag", targetId: flag._id,
+      summary: `${action === "remove" ? "Removed" : "Dismissed a report on"} a ${flag.targetType} listing${note ? `: ${note}` : ""}`,
+    });
 
     notify(flag.reportedBy, {
       type: "system",

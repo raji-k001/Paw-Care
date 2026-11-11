@@ -40,6 +40,9 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+        if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({ message: "Enter your email and password" });
+    }
 
     const user = await User.findOne({ email }).select("+password");
     if (!user || !(await user.matchPassword(password))) {
@@ -117,6 +120,7 @@ export const resetPassword = async (req, res) => {
     user.password = password; // the pre-save hook hashes it
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined; // single use
+    user.passwordChangedAt = new Date();
     await user.save();
 
     sendEmail({

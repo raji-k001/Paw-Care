@@ -1,3 +1,4 @@
+import { audit } from "../utils/audit.js"; 
 import VolunteerProfile from "../models/volunteerProfile.js";
 import { getStats, getHoursByVolunteer, certMinHours } from "../utils/volunteerStats.js";
 import { notify, notifyStaff } from "../utils/notify.js";
@@ -80,6 +81,10 @@ export const verifyVolunteer = async (req, res) => {
     profile.verifiedBy = verified ? req.user._id : undefined;
     profile.verifiedAt = verified ? new Date() : undefined;
     await profile.save();
+        audit(req, verified ? "volunteer.verified" : "volunteer.unverified", {
+      targetType: "volunteer", targetId: profile._id,
+      summary: verified ? "Verified a volunteer profile" : "Removed a volunteer's verification",
+    });
 
     notify(profile.user, {
       type: "system",

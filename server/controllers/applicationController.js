@@ -1,3 +1,4 @@
+import { audit } from "../utils/audit.js"; 
 import Application from "../models/adoptionApplication.js";
 import Pet from "../models/Pet.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
@@ -183,6 +184,10 @@ export const getApplicationById = async (req, res) => {
     }
 
     await application.save();
+        audit(req, `application.${status.toLowerCase()}`, {
+      targetType: "application", targetId: application._id,
+      summary: `${status} application for ${application.pet.name}${status === "Rejected" ? `: ${rejectionReason}` : ""}`,
+    });
 
     // Tell the applicant about the decision
     const petName = application.pet.name;

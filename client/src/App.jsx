@@ -39,6 +39,8 @@ import LostFound from "./pages/LostFound";
 import ReportLostFound from "./pages/ReportLostFound";
 import LostFoundDetails from "./pages/LostFoundDetails";
 import AdminFlags from "./pages/AdminFlags";
+import AdminAudit from "./pages/AdminAudit";
+import PetQR from "./pages/PetQR";
 
 const staff = ["shelter_staff", "admin"];
 const medicalRoles = ["shelter_staff", "veterinarian", "admin"];
@@ -94,6 +96,11 @@ export default function App() {
 <Route path="/lostfound/:id" element={<LostFoundDetails />} />
 <Route path="/admin/reports"
   element={<ProtectedRoute roles={["admin"]}><AdminFlags /></ProtectedRoute>} />
+
+<Route path="/admin/audit"
+  element={<ProtectedRoute roles={["admin"]}><AdminAudit /></ProtectedRoute>} />
+<Route path="/pets/:id/qr"
+  element={<ProtectedRoute roles={staff}><PetQR /></ProtectedRoute>} />
 
         <Route path="*" element={<p className="p-6">Page not found</p>} />
         <Route path="/admin/dashboard"
