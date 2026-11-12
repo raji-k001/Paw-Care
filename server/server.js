@@ -5,7 +5,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import connectDB from "./config/db.js";
 import sanitizeInput from "./middleware/sanitize.js";
-import { startReminderJob, sendDueRemainders} from "./utils/reminders.js";
+import { startReminderJob, sendDueReminders} from "./utils/reminders.js";
 import { razorpayWebhook } from "./controllers/donationController.js";
 import authRoutes from "./routes/authRoutes.js";
 import petRoutes from "./routes/petRoutes.js";
