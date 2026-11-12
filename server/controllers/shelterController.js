@@ -1,6 +1,6 @@
 import { audit } from "../utils/audit.js"; 
 import Shelter from "../models/Shelter.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import { notify } from "../utils/notify.js";
 import { canRunShelter } from "../utils/access.js";
 import { occupancyOf, occupancyMap } from "../utils/shelterStats.js";

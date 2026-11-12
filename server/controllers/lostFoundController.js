@@ -1,5 +1,5 @@
 import LostFoundReport from "../models/LostFoundReport.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { notify } from "../utils/notify.js";
 import { findMatches, shareWord, EARTH_KM } from "../utils/matching.js";

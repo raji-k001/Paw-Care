@@ -1,5 +1,5 @@
 import RescueRequest from "../models/rescueRequest.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { notify, notifyStaff } from "../utils/notify.js";
 

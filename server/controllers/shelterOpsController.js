@@ -1,6 +1,6 @@
 import Shelter from "../models/Shelter.js";
 import Pet from "../models/Pet.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import Movement from "../models/AnimalMovement.js";
 import SupplyItem from "../models/SupplyItem.js";
 import ShelterExpense from "../models/ShelterExpense.js";

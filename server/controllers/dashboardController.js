@@ -1,4 +1,4 @@
-import User from "../models/user.js";
+import User from "../models/User.js";
 import Pet from "../models/Pet.js";
 import Application from "../models/adoptionApplication.js";
 import RescueRequest from "../models/rescueRequest.js";
