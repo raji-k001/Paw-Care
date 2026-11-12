@@ -28,10 +28,10 @@ export default function Login() {
       <h1 className="mb-4 text-2xl font-bold">Login</h1>
       {error && <p className="mb-3 rounded bg-red-100 p-2 text-sm text-red-700">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input type="email" required placeholder="Email" value={form.email}
+        <input id="email" required name="email" type="email" placeholder="Email" value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           className="w-full rounded border border-gray-300 px-3 py-2" />
-        <input type="password" required placeholder="Password" value={form.password}
+        <input id="password" required  name="password" type="password" placeholder="Password" value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className="w-full rounded border border-gray-300 px-3 py-2" />
         <button disabled={loading}
