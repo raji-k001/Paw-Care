@@ -3,7 +3,7 @@ import ContentFlag from "../models/ContentFlag.js";
 import Pet from "../models/Pet.js";
 import Campaign from "../models/Campaign.js";
 import LostFoundReport from "../models/LostFoundReport.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import { notify } from "../utils/notify.js";
 
 const sameId = (a, b) => a && b && a.toString() === b.toString();
