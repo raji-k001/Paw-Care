@@ -3,7 +3,7 @@ import {
   createApplication, getMyApplications, getApplications,
   getApplicationById, reviewApplication, withdrawApplication,
 } from "../controllers/applicationController.js";
-import { protect, authorize } from "../middleware/authmiddleware.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 import { uploadDocs } from "../middleware/upload.js";
 
 const router = express.Router();
