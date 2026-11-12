@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { sendEmail } from "../utils/email.js";
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import User from "../models/User.js";
 
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
