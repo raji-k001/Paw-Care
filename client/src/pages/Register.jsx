@@ -34,11 +34,10 @@ export default function Register() {
       <h1 className="mb-4 text-2xl font-bold">Create account</h1>
       {error && <p className="mb-3 rounded bg-red-100 p-2 text-sm text-red-700">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input name="name" required placeholder="Full name" value={form.name} onChange={update} className={input} />
-        <input name="email" type="email" required placeholder="Email" value={form.email} onChange={update} className={input} />
-        <input name="phone" placeholder="Phone (optional)" value={form.phone} onChange={update} className={input} />
-        <input name="password" type="password" required minLength={6} placeholder="Password (min 6)"
-          value={form.password} onChange={update} className={input} />
+        <input name="name" required placeholder="Full name" autoComplete="name" value={form.name} onChange={update} className={input} />
+        <input name="email" type="email" required placeholder="Email" autoComplete="username" value={form.email} onChange={update} className={input} />
+        <input name="phone" placeholder="Phone (optional)" autoComplete="tel" value={form.phone} onChange={update} className={input} />
+        <input name="password" type="password" required minLength={6} placeholder="Password (min 6)" autoComplete="new-password" value={form.password} onChange={update} className={input} />
         <select name="role" value={form.role} onChange={update} className={input}>
           <option value="adopter">I want to adopt</option>
           <option value="volunteer">I want to volunteer</option>
