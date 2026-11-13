@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -47,6 +48,11 @@ const medicalRoles = ["shelter_staff", "veterinarian", "admin"];
 const responders = ["volunteer", "shelter_staff", "admin"];
 
 export default function App() {
+  useEffect(() => {
+  // Wake the free server as soon as the site opens
+  const root = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+  fetch(`${root}/health`).catch(() => {});
+}, []);
   return (
     <div className="min-h-screen bg-orange-50/40">
       <Navbar />
