@@ -2,20 +2,10 @@
 
 A full-stack MERN platform that brings animal adoption, rescue reporting, volunteer coordination, shelter management, medical records and fundraising into one place. Adopters, volunteers, shelter staff, veterinarians and admins each get their own tools, and every rule is enforced on the server.
 
-**Live demo:** https://YOUR-APP.vercel.app
-**API health check:** https://YOUR-API.onrender.com/health
+**Live demo:** https://paw-care-pi.vercel.app
+**API health check:** https://paw-care-um9c.onrender.com/
 
 > The API runs on a free hosting plan that sleeps when idle, so the **first load can take about a minute**. Payments run in **Razorpay test mode** (no real money), and all demo data is fake.
-
----
-
-## Screenshots
-
-| | |
-|---|---|
-| ![Pet listing](docs/pets.png) **Pet listing with filters** | ![Pet details](docs/pet-details.png) **Pet details and adoption** |
-| ![Rescue map](docs/rescue-map.png) **Rescue report with map** | ![Dashboard](docs/dashboard.png) **Admin dashboard** |
-| ![Campaign](docs/campaign.png) **Fundraising campaign** | ![Shelter hub](docs/shelter-hub.png) **Shelter management** |
 
 ---
 
