@@ -9,7 +9,7 @@ import Certificate from "../models/certificate.js";
 import Donation from "../models/Donation.js";
 import Campaign from "../models/Campaign.js";
 import ContentFlag from "../models/ContentFlag.js";
-
+import Shelter from "../models/Shelter.js";
 
 const IST_MS = 5.5 * 60 * 60 * 1000; // India is UTC+5:30
 const sum = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
